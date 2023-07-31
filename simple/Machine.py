@@ -1,14 +1,14 @@
 class Machine:
-    def __init__(self, expression, environment: dict):
-        self.expression = expression
+    def __init__(self, statement, environment: dict):
+        self.statement = statement
         self.environment = environment
 
     def step(self):
-        self.expression = self.expression.reduce(self.environment)
+        self.statement, self.environment = self.statement.reduce(self.environment)
 
     def run(self):
-        while self.expression.reducible:
-            print(self.expression)
+        while self.statement.reducible:
+            print(self.statement)
             self.step()
-        print(self.expression)
-        return self.expression
+        print(self.statement, self.environment)
+        return self.statement
