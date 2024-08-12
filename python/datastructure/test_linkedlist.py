@@ -1,95 +1,56 @@
 
 class Node:
-    def __init__(self, data):
-        self.data = data
+    def __init__(self, val = None):
+        self.val = val
         self.next = None
         self.prev = None
-
-
-def test_double_linkedlist_node():
-    node = Node(1)
-    assert node.data == 1
-    assert node.next is None
-    assert node.prev is None
     
+    def __repr__(self) -> str:
+        return f"Node(val={self.val}, next={self.next}, prev={self.val})"
+
 
 class DoubleLinkedList:
+    """
+    >>> dl = DoubleLinkedList()
+    >>> dl
+    None->None
+    >>> dl.insert(Node(1))
+    >>> dl
+    None->1->None
+    >>> dl.insert(Node(2))
+    >>> dl
+    None->1->2->None
+    >>> dl.remove(dl.head.next)
+    >>> dl
+    None->2->None
+    """
 
     def __init__(self):
-        self.head = None
+        self.head = Node()
+        self.end = Node()
+        self.head.next = self.end
+        self.end.prev = self.head
 
-    def append(self, data):
-        if self.head is None:
-            self.head = Node(data)
-            return
+    def insert(self, node: Node):
+        prev_node, next_node = self.end.prev, self.end
+        prev_node.next = next_node.prev = node
+        node.prev, node.next = prev_node, next_node
+        
+        
+    def remove(self, node: Node):
+        prev_node, next_node = node.prev, node.next
+        prev_node.next = next_node
+        next_node.prev = prev_node
 
-        current = self.head
-        while current.next:
-            current = current.next
+    def __repr__(self) -> str:
+        p = self.head
+        nodes = []
+        while p:
+            nodes.append(str(p.val))
+            p = p.next
+        return '->'.join(nodes)
 
-        current.next = Node(data)
-        current.next.prev = current
 
-    def prepend(self, data):
-        if self.head is None:
-            self.head = Node(data)
-            return
-
-        current = self.head
-        current.prev = Node(data)
-        current.prev.next = current
-        self.head = current.prev
-
-    def delete(self, data):
-        if self.head is None:
-            return
-
-        current = self.head
-        while current:
-            if current.data == data:
-                if current.prev:
-                    current.prev.next = current.next
-                else:
-                    self.head = current.next
-                if current.next:
-                    current.next.prev = current.prev
-                return
-            current = current.next
-
-    def insert_after(self, data, after_data):
-        if self.head is None:
-            return
-
-        current = self.head
-        while current:
-            if current.data == after_data:
-                new_node = Node(data)
-                new_node.next = current.next
-                new_node.prev = current
-                if current.next:
-                    current.next.prev = new_node
-                current.next = new_node
-                return
-            current = current.next
-
-    def insert_before(self, data, before_data):
-        if self.head is None:
-            return
-
-        current = self.head
-        while current:
-            if current.data == before_data:
-                new_node = Node(data)
-                new_node.next = current
-                new_node.prev = current.prev
-                if current.prev:
-                    current.prev.next = new_node
-                current.prev = new_node
-                return
-            current = current.next
-
-    def print_list(self):
-        current = self.head
-        while current:
-            print(current.data)
-            current = current.next
+if __name__ == "__main__":
+    from doctest import testmod
+    testmod()
