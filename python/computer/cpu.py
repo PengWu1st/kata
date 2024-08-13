@@ -62,10 +62,7 @@ class CPU:
                         
 
     def add_xy(self, x: int, y: int):
-
         self.registers[x] + self.registers[y]
-
-
 
 
 if __name__ == "__main__":
