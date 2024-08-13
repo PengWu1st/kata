@@ -13,7 +13,7 @@ class CPU:
     - 4: the forth digit represents the opreation subtype, in this case, means add
 
     Example 1:
-    >>> cpu = CPU([0,0])
+    >>> cpu = CPU([0]*16)
     >>> cpu.memory[0], cpu.memory[1] = 0x80, 0x14
     >>> cpu.registers[0] = 5
     >>> cpu.registers[1] = 10
@@ -62,7 +62,14 @@ class CPU:
                         
 
     def add_xy(self, x: int, y: int):
-        self.registers[x] + self.registers[y]
+        s = self.registers[x] + self.registers[y]
+        overflow = False
+        if s > 255:
+            s = s & 0xFF
+            overflow = True
+        self.registers[x] = s
+        self.registers[0xF] = 1 if overflow else 0
+
 
 
 if __name__ == "__main__":
