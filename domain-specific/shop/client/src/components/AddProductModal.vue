@@ -59,14 +59,14 @@
               <button
                 type="button"
                 class="btn btn-primary btn-sm"
-                @click="handleAddSubmit"
+                @click="$emit('add-submit')"
               >
                 Submit
               </button>
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
-                @click="handleAddReset"
+                @click="$emit('add-reset')"
               >
                 Reset
               </button>
