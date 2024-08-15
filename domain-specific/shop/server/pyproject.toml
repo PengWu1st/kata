@@ -9,6 +9,9 @@ packages = [{include = "server", from = "src"}]
 [tool.poetry.dependencies]
 python = "^3.11"
 fastapi = {extras = ["standard"], version = "^0.112.0"}
+stripe = "^10.7.0"
+python-dotenv = "^1.0.1"
+httpx = {extras = ["socks"], version = "^0.27.0"}
 
 
 [build-system]
