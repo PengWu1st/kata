@@ -9,21 +9,34 @@
     <td>{{ product.price }}</td>
     <td>
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-warning btn-sm">Update</button>
+        <!-- <button type="button" class="btn btn-warning btn-sm">Update</button>
         <button
           type="button"
           class="btn btn-danger btn-sm"
           @click="onDeleteProduct(product)"
         >
           Delete
+        </button> -->
+        <button
+          type="button"
+          class="btn btn-warning btn-sm"
+          @click="onPurchaseProduct(product, true)"
+        >
+          Purchase (Redirect)
         </button>
         <button
           type="button"
-          class="btn btn-primary btn-sm"
-          @click="onPurchaseProduct(product)"
+          class="btn btn-danger btn-sm"
+          @click="onPurchaseProduct(product, false)"
         >
-          Purchase
+          Purchase (NewTab)
         </button>
+        <router-link
+          :to="`/checkout`"
+          type="button"
+          class="btn btn-primary btn-sm"
+          >Purchase (InApp)</router-link
+        >
       </div>
     </td>
   </tr>
@@ -42,8 +55,8 @@ export default {
     onDeleteProduct(product) {
       this.$emit("delete-product", product);
     },
-    onPurchaseProduct(product) {
-      this.$emit("purchase-product", product);
+    onPurchaseProduct(product, newTab) {
+      this.$emit("purchase-product", product, newTab);
     },
   },
 };

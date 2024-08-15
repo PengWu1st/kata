@@ -1,6 +1,7 @@
 import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import stripe
@@ -41,7 +42,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "https://checkout.stripe.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -82,6 +83,49 @@ def get_public_key():
     return {'publicKey': os.getenv('STRIPE_PUBLISHABLE_KEY')}
 
 
+calcuateTax = False
+
+
+@app.get('/create-payment-intent')
+def create_payment():
+    # Create a PaymentIntent with the amount, currency, and a payment method type.
+    #
+    # See the documentation [0] for the full list of supported parameters.
+    #
+    # [0] https://stripe.com/docs/api/payment_intents/create
+    try:
+        orderAmount = 1400
+        intent: stripe.PaymentIntent
+
+        if calcuateTax:
+            taxCalculation = calculate_tax(orderAmount, "usd")
+            intent = stripe.PaymentIntent.create(
+                amount=taxCalculation['amount_total'],
+                currency='usd',
+                automatic_payment_methods={
+                    'enabled': True,
+                },
+                metadata={
+                    'tax_calculation': taxCalculation['id']
+                }
+            )
+        else:
+            intent = stripe.PaymentIntent.create(
+                amount=orderAmount,
+                currency='usd',
+                automatic_payment_methods={
+                    'enabled': True,
+                }
+            )
+
+        # Send PaymentIntent details to the front end.
+        return {'clientSecret': intent.client_secret}
+    except stripe.StripeError as e:
+        return {'error': {'message': str(e)}}, 400
+    except Exception as e:
+        return {'error': {'message': str(e)}}, 400
+
+
 @app.post('/create-checkout-session')
 def create_checkout_session(data: dict):
     domain_url = 'http://localhost:5173'
@@ -102,7 +146,37 @@ def create_checkout_session(data: dict):
                 {"price": PRICEIDS[product_to_purchase.name], "quantity": 1}
             ],
         )
+        if not checkout_session.url:
+            return {'error': 'Invalid checkout session'}
+        return {"url": checkout_session.url}
 
-        return {'sessionId': checkout_session['id']}
+        # return {'sessionId': checkout_session['id']}
     except Exception as e:
         return {'error': str(e)}
+
+
+def calculate_tax(orderAmount: int, currency: str):
+    tax_calculation = stripe.tax.Calculation.create(
+        currency=currency,
+        customer_details={
+            "address": {
+                "line1": "10709 Cleary Blvd",
+                "city": "Plantation",
+                "state": "FL",
+                "postal_code": "33324",
+                "country": "US",
+            },
+            "address_source": "shipping",
+        },
+        line_items=[
+            {
+                "amount": orderAmount,  # Amount in cents
+                "reference": "ProductRef",
+                "tax_behavior": "exclusive",
+                "tax_code": "txcd_30011000"
+            }
+        ],
+        shipping_cost={"amount": 300}
+    )
+
+    return tax_calculation

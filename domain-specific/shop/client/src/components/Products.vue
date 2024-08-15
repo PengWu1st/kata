@@ -79,7 +79,7 @@ export default {
   methods: {
     addProduct(payload) {
       axios
-        .post("http://localhost:8000/products", payload)
+        .post("/api/products", payload)
         .then(() => {
           this.getProducts();
           this.message = "Products added successfully!";
@@ -92,7 +92,7 @@ export default {
     },
     getProducts() {
       axios
-        .get("http://localhost:8000/products")
+        .get("/api/products")
         .then((response) => {
           this.products = response.data.products;
         })
@@ -101,7 +101,7 @@ export default {
         });
     },
     getStripePublishableKey() {
-      fetch("http://localhost:8000/config")
+      fetch("/api/config")
         .then((result) => result.json())
         .then((data) => {
           // Initialize Stripe.js
@@ -126,9 +126,9 @@ export default {
       });
       this.initForm();
     },
-    handlePurchaseProduct(product) {
+    handlePurchaseProduct(product, newTab) {
       console.log(product.id);
-      fetch("http://localhost:8000/create-checkout-session", {
+      fetch("/api/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,8 +138,13 @@ export default {
         .then((result) => result.json())
         .then((data) => {
           console.log(data);
-          // Redirect to Stripe Checkout
-          return this.stripe.redirectToCheckout({ sessionId: data.sessionId });
+          if (newTab) {
+            // Redirect to Stripe Checkout in new tab
+            window.open(data.url, "_blank");
+          } else {
+            // Redirect to Stripe Checkout in current tab
+            window.location.href = data.url;
+          }
         })
         .then((res) => {
           console.log(res);
