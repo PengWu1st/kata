@@ -1,5 +1,6 @@
 <template>
   <div class="nav-bar"></div>
+  <div class="cart">Cart({{ cart }})</div>
   <div class="product-display">
     <div class="product-container">
       <div class="product-image">
@@ -16,12 +17,32 @@
       <p v-if="product.onSale">On Sale!</p>
       <p>{{ product.description }}</p>
       <ul>
-        <li v-for="feature in product.features" :key="feature">
+        <li
+          v-for="feature in product.features"
+          :key="feature"
+          class="product-feature"
+        >
           {{ feature }}
         </li>
       </ul>
+      <div class="product-variants-container">
+        <div
+          v-for="variant in variants"
+          :key="variant.id"
+          class="product-variant"
+          @mouseover="updateImage(variant.image)"
+        >
+          {{ variant.color }}
+        </div>
+      </div>
+      <div class="product-sizes-container">
+        <div v-for="size in sizes" :key="size">
+          {{ size }}
+        </div>
+      </div>
+
       <p>Price: {{ product.price }}</p>
-      <button @click="addToCart">Add to Cart</button>
+      <button class="button" @click="addToCart">Add to Cart</button>
     </div>
   </div>
 </template>
@@ -30,27 +51,49 @@
 export default {
   data() {
     return {
+      cart: 0,
       product: {
         name: "Product Name",
         description: "Product Description",
         price: 0,
         inventory: 10,
         onSale: false,
-        image: "https://via.placeholder.com/150",
+        image: "https://via.assets.so/game.png?id=1&w=200&h=200",
         url: "https://example.com",
         features: ["Feature 1", "Feature 2", "Feature 3"],
       },
+      variants: [
+        {
+          id: 1,
+          color: "blue",
+          image: "https://via.assets.so/game.png?id=2&w=200&h=200",
+        },
+        {
+          id: 2,
+          color: "red",
+          image: "https://via.assets.so/game.png?id=3&w=200&h=200",
+        },
+      ],
+      sizes: ["S", "M", "L"],
     };
   },
   methods: {
     addToCart() {
-      // Add logic to add the product to the cart
+      this.cart += 1;
+    },
+    updateImage(image) {
+      this.product.image = image;
     },
   },
 };
 </script>
 
 <style scoped>
+.cart {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 20px;
+}
 .product-display {
   display: flex;
   justify-content: center;
@@ -64,12 +107,28 @@ export default {
   margin-right: 20px;
 }
 .product-image img {
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
 }
 .product-info {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.product-feature {
+  list-style-type: none;
+}
+.product-variants-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.product-variant {
+  margin: 5px 0;
+}
+.product-sizes-container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 }
 </style>
