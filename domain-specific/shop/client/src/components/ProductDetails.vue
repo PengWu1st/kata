@@ -15,6 +15,11 @@
       <p v-else>Out of Stock</p>
       <p v-if="product.onSale">On Sale!</p>
       <p>{{ product.description }}</p>
+      <ul>
+        <li v-for="feature in product.features" :key="feature">
+          {{ feature }}
+        </li>
+      </ul>
       <p>Price: {{ product.price }}</p>
       <button @click="addToCart">Add to Cart</button>
     </div>
@@ -33,6 +38,7 @@ export default {
         onSale: false,
         image: "https://via.placeholder.com/150",
         url: "https://example.com",
+        features: ["Feature 1", "Feature 2", "Feature 3"],
       },
     };
   },
