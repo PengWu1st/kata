@@ -8,11 +8,11 @@ import { RouterView } from "vue-router";
 </template>
 
 <style>
+@import url("https://fonts.googleapis.com/css?family=Raleway&display=swap");
+
 #app {
   margin-top: 60px;
 }
-
-@import url("https://fonts.googleapis.com/css?family=Raleway&display=swap");
 
 :root {
   --light-grey: #f6f9fc;

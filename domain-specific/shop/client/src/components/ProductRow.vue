@@ -20,14 +20,14 @@
         <button
           type="button"
           class="btn btn-warning btn-sm"
-          @click="onPurchaseProduct(product, true)"
+          @click="onPurchaseProduct(product, false)"
         >
           Purchase (Redirect)
         </button>
         <button
           type="button"
           class="btn btn-danger btn-sm"
-          @click="onPurchaseProduct(product, false)"
+          @click="onPurchaseProduct(product, true)"
         >
           Purchase (NewTab)
         </button>
