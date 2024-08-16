@@ -2,18 +2,12 @@ import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-from pydantic import BaseModel
 from dotenv import load_dotenv
 import stripe
 
+from server.domain import Product
+
 load_dotenv()
-
-
-class Product(BaseModel):
-    id: int
-    name: str
-    description: str
-    price: float
 
 
 PRODUCTS = [
@@ -56,7 +50,6 @@ async def pong():
 
 @app.get("/products")
 def all_products():
-
     return {'products': PRODUCTS}
 
 
@@ -149,7 +142,6 @@ def create_checkout_session(data: dict):
         if not checkout_session.url:
             return {'error': 'Invalid checkout session'}
         return {"url": checkout_session.url}
-
         # return {'sessionId': checkout_session['id']}
     except Exception as e:
         return {'error': str(e)}
@@ -180,3 +172,28 @@ def calculate_tax(orderAmount: int, currency: str):
     )
 
     return tax_calculation
+
+
+@app.post('/account-session')
+def create_account_session(body: dict):
+    try:
+        connected_account_id = body['account']
+
+        account_session = stripe.AccountSession.create(
+            account=connected_account_id,
+            components={"account_onboarding": {"enabled": True}, },
+        )
+        return {'client_secret': account_session.client_secret}
+    except Exception as e:
+        print('An error occurred when calling the Stripe API to create an account session: ', e)
+        return dict(error=str(e)), 500
+
+
+@app.post('/account')
+def create_account():
+    try:
+        account = stripe.Account.create()
+        return {'account': account.id, }
+    except Exception as e:
+        print('An error occurred when calling the Stripe API to create an account: ', e)
+        return dict(error=str(e)), 500

@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, computed, toRef } from "vue";
+import { computed, toRef } from "vue";
 
 const props = defineProps({
   messages: {
