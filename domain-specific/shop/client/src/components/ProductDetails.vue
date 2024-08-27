@@ -31,9 +31,8 @@
           :key="variant.id"
           class="product-variant"
           @mouseover="updateImage(variant.image)"
-        >
-          {{ variant.color }}
-        </div>
+          :style="{ backgroundColor: variant.color }"
+        ></div>
       </div>
       <div class="product-sizes-container">
         <div v-for="size in sizes" :key="size">
@@ -42,7 +41,16 @@
       </div>
 
       <p>Price: {{ product.price }}</p>
-      <button class="button" @click="addToCart">Add to Cart</button>
+      <button
+        class="button"
+        :class="{ disabledButton: !inStock, outOfStockImg: !inStock }"
+        :disabled="!inStock"
+        @click="addToCart"
+      >
+        Add to Cart
+      </button>
+      <br />
+      <button class="button" @click="removeFromCart">Remove from Cart</button>
     </div>
   </div>
 </template>
@@ -62,6 +70,8 @@ export default {
         url: "https://example.com",
         features: ["Feature 1", "Feature 2", "Feature 3"],
       },
+      inStock: false,
+      brand: "Warren",
       variants: [
         {
           id: 1,
@@ -83,6 +93,11 @@ export default {
     },
     updateImage(image) {
       this.product.image = image;
+    },
+    removeFromCart() {
+      if (this.cart > 0) {
+        this.cart -= 1;
+      }
     },
   },
 };
@@ -124,11 +139,22 @@ export default {
   gap: 10px;
 }
 .product-variant {
-  margin: 5px 0;
+  width: 50px;
+  height: 50px;
+  margin-top: 8px;
+  border: 2px solid #d8d8d8;
+  border-radius: 50%;
 }
 .product-sizes-container {
   display: flex;
   flex-direction: row;
   gap: 10px;
+}
+.disabledButton {
+  background-color: #d8d8d8;
+  cursor: not-allowed;
+}
+.outOfStockImg {
+  filter: grayscale(100%);
 }
 </style>
