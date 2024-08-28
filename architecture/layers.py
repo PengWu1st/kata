@@ -27,14 +27,14 @@ class L3Provider:
 
 class DataLink(L1Provider):
     def l1_service(self):
-        print("LlService doing its job")
+        print("L1Service doing its job")
 
 
 class Transport(L2Provider):
     def l2_service(self):
         print("L2Service starting its job")
         if self.level1:
-            self.level1.ll_service()
+            self.level1.l1_service()
         print("L2Service finishing its job")
 
 
