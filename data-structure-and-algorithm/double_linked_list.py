@@ -1,11 +1,12 @@
 from typing import Any
 
+
 class Node:
     def __init__(self, val: Any = None):
         self.val = val
-        self.next = None
-        self.prev = None
-    
+        self.next: Node | None = None
+        self.prev: Node | None = None
+
     def __repr__(self) -> str:
         return f"Node(val={self.val}, next={self.next}, prev={self.val})"
 
@@ -34,20 +35,23 @@ class DoubleLinkedList:
 
     def append(self, node: Node):
         prev_node, next_node = self.end.prev, self.end
-        prev_node.next = next_node.prev = node
+        if prev_node:
+            prev_node.next = node
+        next_node.prev = node
         node.prev, node.next = prev_node, next_node
-        
-        
+
     def remove(self, node: Node):
         prev_node, next_node = node.prev, node.next
-        prev_node.next = next_node
-        next_node.prev = prev_node
-    
+        if prev_node:
+            prev_node.next = next_node
+        if next_node:
+            next_node.prev = prev_node
+
     def pop(self):
         result = self.head.next
-        self.remove(self.head.next)
+        if self.head.next:
+            self.remove(self.head.next)
         return result
-        
 
     def __repr__(self) -> str:
         p = self.head

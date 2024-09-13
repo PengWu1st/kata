@@ -12,6 +12,7 @@ Example 1:
 """
 from double_linked_list import DoubleLinkedList, Node
 
+
 class LRUCache:
 
     """
@@ -49,5 +50,10 @@ class LRUCache:
 
         if len(self.cache) > self.cap:
             node = self.dll.pop()
-            self.cache.pop(node.val[0])
+            if node:
+                self.cache.pop(node.val[0])
 
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
