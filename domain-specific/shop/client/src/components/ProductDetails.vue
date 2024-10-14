@@ -62,6 +62,7 @@ export default {
       cart: 0,
       product: {
         name: "Product Name",
+        brand: "Brand Name",
         description: "Product Description",
         price: 0,
         inventory: 10,
@@ -98,6 +99,11 @@ export default {
       if (this.cart > 0) {
         this.cart -= 1;
       }
+    },
+  },
+  computed: {
+    title() {
+      return this.brand + " " + this.product.name;
     },
   },
 };

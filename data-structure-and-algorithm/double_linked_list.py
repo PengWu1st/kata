@@ -48,6 +48,8 @@ class DoubleLinkedList:
             next_node.prev = prev_node
 
     def pop(self):
+        if self.head.next == self.end:
+            return None
         result = self.head.next
         if self.head.next:
             self.remove(self.head.next)
