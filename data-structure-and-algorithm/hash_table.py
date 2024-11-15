@@ -33,7 +33,7 @@ class HashTable:
 
     def insert(self, key, value):
         index = self._hash(key)
-        self._table[index].insert(HashNode(key, value))
+        self._table[index].insertHead(HashNode(key, value))
 
     def _hash(self, key):
         return hash(key) % self._size
