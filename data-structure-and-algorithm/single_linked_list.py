@@ -30,7 +30,7 @@ class SingleLinkedList:
     def __init__(self) -> None:
         self.head = None
 
-    def insert(self, val: Any) -> None:
+    def insertHead(self, val: Any) -> None:
         node = Node(val)
         node.next = self.head
         self.head = node
