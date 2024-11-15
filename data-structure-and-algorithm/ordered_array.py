@@ -9,6 +9,13 @@ class OrderedArray:
         self._array = [0] * self._size
         self._length = 0
 
+    def __len__(self):
+        return self._length
+
+    def __iter__(self):
+        for i in range(self._length):
+            yield self._array[i]
+
     def get(self, index: int) -> int:
         return self._array[index]
 
@@ -58,6 +65,26 @@ class OrderedArray:
         self._array = new_array
 
 
+def merge_two_ordered_array(array1: OrderedArray, array2: OrderedArray) -> OrderedArray:
+    result = OrderedArray(len(array1) + len(array2))
+    i = 0
+    j = 0
+    while i < len(array1) and j < len(array2):
+        if array1.get(i) < array2.get(j):
+            result.insert(array1.get(i))
+            i += 1
+        else:
+            result.insert(array2.get(j))
+            j += 1
+    while i < len(array1):
+        result.insert(array1.get(i))
+        i += 1
+    while j < len(array2):
+        result.insert(array2.get(j))
+        j += 1
+    return result
+
+
 class TestOrderedArray(TestCase):
 
     def test_init(self) -> None:
@@ -89,3 +116,27 @@ class TestOrderedArray(TestCase):
         assert ordered_array.get(0) == 1
         assert ordered_array.get(1) == 3
         assert ordered_array.get(2) == 4
+
+    def test_search(self) -> None:
+        ordered_array = OrderedArray()
+        ordered_array.insert(1)
+        ordered_array.insert(2)
+        ordered_array.insert(3)
+        ordered_array.insert(4)
+
+        assert ordered_array.search(2) == 1
+        assert ordered_array.search(5) == -1
+
+    def test_merge_two_ordered_array(self) -> None:
+        ordered_array1 = OrderedArray()
+        ordered_array1.insert(1)
+        ordered_array1.insert(3)
+        ordered_array1.insert(5)
+
+        ordered_array2 = OrderedArray()
+        ordered_array2.insert(2)
+        ordered_array2.insert(4)
+        ordered_array2.insert(6)
+
+        result = merge_two_ordered_array(ordered_array1, ordered_array2)
+        assert list(result) == [1, 2, 3, 4, 5, 6]
