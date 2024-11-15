@@ -42,6 +42,14 @@ class OrderedArray:
         self._array[low] = value
         self._length += 1
 
+    def remove(self, value: int) -> None:
+        index = self.search(value)
+        if index == -1:
+            return
+        for i in range(index, self._length - 1):
+            self._array[i] = self._array[i + 1]
+        self._length -= 1
+
     def _resize(self) -> None:
         self._size *= 2
         new_array = [0] * self._size
@@ -65,8 +73,19 @@ class TestOrderedArray(TestCase):
         ordered_array.insert(4)
         ordered_array.insert(2)
         ordered_array.insert(3)
-        print(ordered_array._array)
         assert ordered_array.get(0) == 1
         assert ordered_array.get(1) == 2
         assert ordered_array.get(2) == 3
         assert ordered_array.get(3) == 4
+
+    def test_remove(self) -> None:
+        ordered_array = OrderedArray()
+        ordered_array.insert(1)
+        ordered_array.insert(2)
+        ordered_array.insert(3)
+        ordered_array.insert(4)
+
+        ordered_array.remove(2)
+        assert ordered_array.get(0) == 1
+        assert ordered_array.get(1) == 3
+        assert ordered_array.get(2) == 4
