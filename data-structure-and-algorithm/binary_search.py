@@ -93,9 +93,10 @@ class TestBinarySearch(unittest.TestCase):
         self.assertEqual(lower_bound(arr, 9), 8)
         self.assertEqual(lower_bound(arr, 10), 9)
 
-    def test_lower_bound_2(self):
-        arr = [1, 2, 2, 2, 5, 6, 7, 8, 9]
-        self.assertEqual(lower_bound(arr, 2), 1)
+        arr2 = [1, 2, 2, 2, 5, 6, 7, 8, 9]
+        self.assertEqual(lower_bound(arr2, 2), 1)
+        arr3 = [1, 2, 2, 2, 9]
+        self.assertEqual(lower_bound(arr3, 2), 1)
 
     def test_upper_bound(self):
         arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
