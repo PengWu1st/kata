@@ -15,6 +15,20 @@ def binary_search(arr: list, value):
     return -1
 
 
+def binary_search_recursive(arr: list, value):
+    def helper(arr, value, l, r):
+        if l > r:
+            return -1
+        m = (l + r) // 2
+        if arr[m] == value:
+            return m
+        elif arr[m] > value:
+            return helper(arr, value, l, m - 1)
+        else:
+            return helper(arr, value, m + 1, r)
+    return helper(arr, value, 0, len(arr) - 1)
+
+
 def binary_search_left(arr: list, value):
     l, r = 0, len(arr) - 1
     while l <= r:
@@ -77,6 +91,13 @@ class TestBinarySearch(unittest.TestCase):
         self.assertEqual(binary_search(arr, 1), 0)
         self.assertEqual(binary_search(arr, 9), 8)
         self.assertEqual(binary_search(arr, 10), -1)
+
+    def test_binary_search_recursive(self):
+        arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        self.assertEqual(binary_search_recursive(arr, 5), 4)
+        self.assertEqual(binary_search_recursive(arr, 1), 0)
+        self.assertEqual(binary_search_recursive(arr, 9), 8)
+        self.assertEqual(binary_search_recursive(arr, 10), -1)
 
     def test_binary_search_left(self):
         arr = [1, 2, 2, 2, 5, 6, 7, 8, 9]
