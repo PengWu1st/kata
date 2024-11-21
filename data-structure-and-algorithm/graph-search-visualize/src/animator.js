@@ -1,5 +1,4 @@
 import anime from "animejs";
-import { findEdgeElement } from "./graphRenderer";
 
 let animationSpeed = 1;
 
