@@ -40,7 +40,7 @@ function startAnimation(iterator) {
 function resetGraph() {
   const allNodes = document.querySelectorAll(".node");
   allNodes.forEach((nodeElement) => {
-    nodeElement.style.backgroundColor = "#4a90e2";
+    nodeElement.style.backgroundColor = "#1abc9c";
     nodeElement.style.transform = "scale(1)";
   });
 
