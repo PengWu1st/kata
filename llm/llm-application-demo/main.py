@@ -1,7 +1,10 @@
+import os
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel
 from pathlib import Path
+
+import requests
 
 app = FastAPI()
 
@@ -138,3 +141,35 @@ async def qa(request: Request):
     text = form["text"]
     # ...existing code...
     return f"<div>回答: {text}</div>"
+
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+async def llm_completion_stream_v1(question: str):
+
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "model": "deepseek/deepseek-chat-v3-0324:free",
+        "messages": [
+            {"role": "user", "content": question}],
+        "stream": True
+    }
+
+    with requests.post(url, headers=headers, json=payload, stream=True) as r:
+        for chunk in r.iter_content(chunk_size=1024, decode_unicode=True):
+            yield chunk
+
+
+@app.post("/proto/llm/completion")
+async def llm_completion(request: Request):
+    """Test basic completion with OpenRouter's DeepSeek model"""
+
+    question = "write a fancy saas landing page"
+    result = llm_completion_stream_v1(question)
+    return StreamingResponse(
+        result, 
+        media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
+    )
