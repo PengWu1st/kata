@@ -1,8 +1,11 @@
+import json
 import os
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, StreamingResponse
+import httpx
 from pydantic import BaseModel
 from pathlib import Path
+from sse_starlette.sse import EventSourceResponse
 
 import requests
 
@@ -163,7 +166,7 @@ async def llm_completion_stream_v1(question: str):
             yield chunk
 
 
-@app.post("/proto/llm/completion")
+@app.post("/v1/llm/completion")
 async def llm_completion(request: Request):
     """Test basic completion with OpenRouter's DeepSeek model"""
 
@@ -172,4 +175,52 @@ async def llm_completion(request: Request):
     return StreamingResponse(
         result, 
         media_type="text/event-stream", headers={"Cache-Control": "no-cache"}
+    )
+
+
+
+async def llm_completion_stream_v2(question: str):
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "deepseek/deepseek-chat-v3-0324:free",
+        "messages": [{"role": "user", "content": question}],
+        "stream": True
+    }
+    try:
+        async with httpx.AsyncClient() as client:
+            async with client.stream('POST', url, headers=headers, json=payload) as response:
+                async for line in response.aiter_lines():
+                    if not line.strip():
+                        # 发送心跳保持连接
+                        yield {"event": "ping", "data": ""}
+                        continue
+                    if line.strip():
+                        if line.startswith('data: '):
+                            data = line[6:]  # 移除 'data: ' 前缀
+                            if data.strip() == '[DONE]':
+                                break
+                            try:
+                                json_data = json.loads(data)
+                                content = json_data['choices'][0]['delta'].get('content', '')
+                                if content:
+                                    yield {"event": "message", "data": content}
+                            except json.JSONDecodeError:
+                                continue
+
+    except Exception as e:
+        yield {"event": "error", "data": str(e)}
+
+
+@app.post("/v2/llm/completion")
+async def llm_completion_v2(request: Request):
+    """Test basic completion with OpenRouter's DeepSeek model"""
+    question = "write a fancy saas landing page"
+    return EventSourceResponse(
+        llm_completion_stream_v2(question),
+        media_type='text/event-stream',
+        headers={'Cache-Control': 'no-cache', 'Connection': 'keep-alive'}
     )

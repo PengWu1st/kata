@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Turnstile Demo</title>
+    <script
+      src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+      async
+      defer
+    ></script>
+  </head>
+  <body>
+    <h1>Turnstile 示例</h1>
+
+    <form id="demo-form">
+      <input type="text" name="name" placeholder="输入姓名" required />
+      <div
+        class="cf-turnstile"
+        data-sitekey="0x4AAAAAABCj7armLnit9KDy"
+        data-callback="onTurnstileSuccess"
+      ></div>
+      <button type="submit">提交</button>
+    </form>
+
+    <script>
+      function onTurnstileSuccess(token) {
+        console.log("Turnstile token:", token);
+      }
+
+      document
+        .getElementById("demo-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const token = turnstile.getResponse();
+          verifyToken(token);
+        });
+
+      function verifyToken(token) {
+        fetch("http://127.0.0.1:9000/verify-turnstile", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ token: token }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.success) {
+              alert("验证通过！");
+            } else {
+              alert("验证失败，请重试！");
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    </script>
+  </body>
+</html>
